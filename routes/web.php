@@ -19,7 +19,7 @@ Route::post('/user/soldTicket/destroy/{id}', [SoldTicketController::class, 'dest
 Route::get('/ticket/buy/{id}', [CheckoutController::class, 'ticketCreate'])->middleware('can:user')->name('ticket.create');
 Route::post('/ticket/store', [CheckoutController::class, 'ticketStore'])->middleware('can:user')->name('ticket.store');
 
-Route::get('categories/{slug}', [CategoryController::class, 'show'])->middleware('can:user')->name('categories.show');
+Route::get('category/{slug}', [CategoryController::class, 'show'])->middleware('can:user')->name('category.show');
 
 Route::post('/forgot/password/{id}', [UserController::class, 'forgotPassword'])->middleware('can:user')->name('forgot.password');
 Route::get('user/password/edit', [UserController::class, 'passwordEdit'])->middleware('auth')->name('password.edit');
@@ -40,10 +40,11 @@ Route::middleware('can:admin')->group(function () {
     Route::get('/admin/profile/edit/{id}', [AdminController::class, 'profilesEdit'])->name('admin.profiles.edit');
     Route::post('/admin/profile/update/{id}', [AdminController::class, 'profilesUpdate'])->name('admin.profiles.update');
 
-    
+
     // Category Management
     Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
     Route::get('categories/create', [CategoryController::class, 'create'])->name('categories.create');
+    Route::get('categories/{slug}', [CategoryController::class, 'show'])->name('categories.show');
     Route::post('categories', [CategoryController::class, 'store'])->name('categories.store');
     Route::get('categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
     Route::put('categories/{category}', [CategoryController::class, 'update'])->name('categories.update');

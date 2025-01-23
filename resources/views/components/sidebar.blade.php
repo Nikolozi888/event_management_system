@@ -7,8 +7,8 @@
         </a>
         @foreach ($categories as $category)
             <li class="nav-item">
-                <a href="{{ route('categories.show', $category->slug) }}"
-                    class="nav-link {{ request()->is('categories/' . $category->slug) ? 'active' : '' }}">
+                <a href="{{ route('category.show', $category->slug) }}"
+                    class="nav-link {{ request()->is('category/' . $category->slug) ? 'active' : '' }}">
                     {{ $category->name }}
                 </a>
             </li>
