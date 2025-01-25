@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PasswordRequest;
+use App\Http\Requests\RegisterRequest;
 use App\Mail\ForgotPassword;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -25,22 +27,21 @@ class UserController extends Controller
         return view('register.create');
     }
 
-    public function store(Request $request)
+    public function store(RegisterRequest $request)
     {
-        $attributes = $request->validate([
-            'name' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:users',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'thumbnail' => 'nullable|image'
-        ]);
+        $attributes = $request->validated();
 
 
         if ($request->hasFile('thumbnail')) {
-            $uniqueName = uniqid() . '-' . $request->file('thumbnail')->getClientOriginalName();
-            $thumbnailPath = $request->file('thumbnail')->storeAs('images', $uniqueName, 'public');
-            $attributes['thumbnail'] = $thumbnailPath;
+            try {
+                $uniqueName = uniqid() . '-' . $request->file('thumbnail')->getClientOriginalName();
+                $thumbnailPath = $request->file('thumbnail')->storeAs('images', $uniqueName, 'public');
+                $attributes['thumbnail'] = $thumbnailPath;
+            } catch (\Exception $e) {
+                return back()->withErrors(['thumbnail' => 'File upload failed. Please try again.']);
+            }
         }
+
 
         $user = User::create($attributes);
 
@@ -76,22 +77,20 @@ class UserController extends Controller
         return view('profiles.change_user_password');
     }
 
-    public function passwordUpdate(Request $request)
+    public function passwordUpdate(PasswordRequest $request)
     {
-        $request->validate([
-            'old_password' => 'required',
-            'new_password' => 'required|confirmed',
-        ]);
+        $attributes = $request->validated();
 
-        if (!Hash::check($request->old_password, Auth::user()->password)) {
+        if (!Hash::check($attributes['old_password'], Auth::user()->password)) {
             return back()->with('error', 'The current password is incorrect.');
         }
 
         Auth::user()->update([
-            'password' => Hash::make($request->new_password),
+            'password' => Hash::make($attributes['new_password']),
         ]);
 
         return redirect()->route('user.profile')->with('message', 'Password Updated!');
     }
+
 
 }

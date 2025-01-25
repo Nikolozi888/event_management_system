@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EventRequest;
 use App\Models\Category;
 use App\Models\Event;
 use Carbon\Carbon;
@@ -33,17 +34,9 @@ class EventController extends Controller
         return view('events.create');
     }
 
-    public function store(Request $request)
+    public function store(EventRequest $request)
     {
-        $attributes = $request->validate([
-            'name' => 'required',
-            'category_id' => 'required|exists:categories,id',
-            'description' => 'required',
-            'start_time' => 'required',
-            'end_time' => 'required',
-            'venue_id' => 'required',
-            'thumbnail' => 'required|image'
-        ]);
+        $attributes = $request->validated();
 
         if ($request->hasFile('thumbnail')) {
             $uniqueName = uniqid() . '-' . $request->file('thumbnail')->getClientOriginalName();
@@ -53,7 +46,7 @@ class EventController extends Controller
 
         Event::create($attributes);
 
-        return redirect()->route('index')->with('success', 'Event created successfully.');
+        return redirect()->route('index')->with('message', 'Event created successfully.');
     }
 
     public function show(Event $event)
@@ -66,25 +59,28 @@ class EventController extends Controller
         return view('events.edit', compact('event'));
     }
 
-    public function update(Request $request, Event $event)
+    public function update(EventRequest $request, Event $event)
     {
-        $attributes = $request->validate([
-            'name' => 'required',
-            'description' => 'required',
-            'start_time' => 'required',
-            'end_time' => 'required',
-            'venue_id' => 'required',
-        ]);
+        $attributes = $request->validated();
+
+        if ($request->hasFile('thumbnail')) {
+            $uniqueName = uniqid() . '-' . $request->file('thumbnail')->getClientOriginalName();
+            $thumbnailPath = $request->file('thumbnail')->storeAs('images', $uniqueName, 'public');
+            $attributes['thumbnail'] = $thumbnailPath;
+        } else {
+            $attributes['thumbnail'] = $event->thumbnail;
+        }
 
         $event->update($attributes);
 
-        return redirect()->route('index')->with('success', 'Event updated successfully.');
+        return redirect()->route('index')->with('message', 'Event updated successfully.');
     }
+
 
     public function destroy(Event $event)
     {
         $event->delete();
 
-        return redirect()->route('index')->with('success', 'Event deleted successfully.');
+        return redirect()->route('index')->with('message', 'Event deleted successfully.');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TicketRequest;
 use App\Models\Ticket;
 use Illuminate\Http\Request;
 
@@ -18,18 +19,13 @@ class TicketController extends Controller
         return view('tickets.create');
     }
 
-    public function store(Request $request)
+    public function store(TicketRequest $request)
     {
-        $attributes = $request->validate([
-            'type' => 'required',
-            'price' => 'required',
-            'quantity' => 'required',
-            'event_id' => 'required',
-        ]);
+        $attributes = $request->validated();
 
         Ticket::create($attributes);
 
-        return redirect()->route('tickets.index')->with('success', 'Ticket created successfully.');
+        return redirect()->route('tickets.index')->with('message', 'Ticket created successfully.');
     }
 
     public function show(Ticket $ticket)
@@ -42,23 +38,19 @@ class TicketController extends Controller
         return view('tickets.edit', compact('ticket'));
     }
 
-    public function update(Request $request, Ticket $ticket)
+    public function update(TicketRequest $request, Ticket $ticket)
     {
-        $attributes = $request->validate([
-            'type' => 'required',
-            'price' => 'required',
-            'event_id' => 'required',
-        ]);
+        $attributes = $request->validated();
 
         $ticket->update($attributes);
 
-        return redirect()->route('tickets.index')->with('success', 'Ticket updated successfully.');
+        return redirect()->route('tickets.index')->with('message', 'Ticket updated successfully.');
     }
 
     public function destroy(Ticket $ticket)
     {
         $ticket->delete();
 
-        return redirect()->route('tickets.index')->with('success', 'Ticket deleted successfully.');
+        return redirect()->route('tickets.index')->with('message', 'Ticket deleted successfully.');
     }
 }

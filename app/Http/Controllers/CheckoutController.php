@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CheckoutRequest;
 use App\Mail\TicketSuccessMail;
 use App\Models\Event;
 use App\Models\SoldTicket;
@@ -20,13 +21,9 @@ class CheckoutController extends Controller
         return view('checkout.ticket_create', compact('event'));
     }
 
-    public function ticketStore(Request $request)
+    public function ticketStore(CheckoutRequest $request)
     {
-        $attributes = $request->validate([
-            'event_id' => 'required',
-            'price' => 'required|numeric',
-            'quantity' => 'required|numeric|min:1',
-        ]);
+        $attributes = $request->validated();
 
         $user = User::find(auth()->user()->id);
         $ticket = Ticket::find($request->ticket);

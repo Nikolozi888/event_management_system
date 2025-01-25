@@ -15,6 +15,10 @@
             <input type="number" step="0.01" name="price" id="price" class="form-control" value="{{ $ticket->price }}" required>
         </div>
         <div class="form-group">
+            <label for="quantity">Quanitity</label>
+            <input type="number" step="0.01" name="quantity" id="quantity" class="form-control" value="{{ $ticket->quantity }}" required>
+        </div>
+        <div class="form-group">
             <label for="event_id">Event</label>
             <select name="event_id" id="event_id" class="form-control" required>
                 @foreach(App\Models\Event::all() as $event)

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->text('description');
             $table->dateTime('start_time');
             $table->dateTime('end_time');
-            $table->string('thumbnail');
+            $table->string('thumbnail')->nullable();
             $table->foreignId('venue_id');
             $table->timestamps();
         });

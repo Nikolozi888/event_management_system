@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\VenueRequest;
 use App\Models\Venue;
 use Illuminate\Http\Request;
 
@@ -18,16 +19,13 @@ class VenueController extends Controller
         return view('venues.create');
     }
 
-    public function store(Request $request)
+    public function store(VenueRequest $request)
     {
-        $attributes = $request->validate([
-            'name' => 'required',
-            'address' => 'required',
-        ]);
+        $attributes = $request->validated();
 
         Venue::create($attributes);
 
-        return redirect()->route('venues.index')->with('success', 'Venue created successfully.');
+        return redirect()->route('venues.index')->with('message', 'Venue created successfully.');
     }
 
     public function show(Venue $venue)
@@ -40,23 +38,19 @@ class VenueController extends Controller
         return view('venues.edit', compact('venue'));
     }
 
-    public function update(Request $request, Venue $venue)
+    public function update(VenueRequest $request, Venue $venue)
     {
-        $attributes = $request->validate([
-            'type' => 'required',
-            'price' => 'required',
-            'event_id' => 'required',
-        ]);
+        $attributes = $request->validated();
 
         $venue->update($attributes);
 
-        return redirect()->route('venues.index')->with('success', 'Venue updated successfully.');
+        return redirect()->route('venues.index')->with('message', 'Venue updated successfully.');
     }
 
     public function destroy(Venue $venue)
     {
         $venue->delete();
 
-        return redirect()->route('venues.index')->with('success', 'Venue deleted successfully.');
+        return redirect()->route('venues.index')->with('message', 'Venue deleted successfully.');
     }
 }

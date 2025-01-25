@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AdminProfilesUpdateRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -22,7 +23,7 @@ class AdminController extends Controller
         return view('admin.user_profile_edit', compact('user'));
     }
 
-    public function profilesUpdate($id, Request $request)
+    public function profilesUpdate($id, AdminProfilesUpdateRequest $request)
     {
         $user = User::find($id);
 
@@ -30,14 +31,11 @@ class AdminController extends Controller
             return redirect()->route('admin.profiles')->with('error', 'User not found');
         }
 
-        $attributes = $request->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:users,email,' . $id,
-            'balance' => 'required'
-        ]);
+        $attributes = $request->validated();
 
         $user->update($attributes);
 
         return redirect()->route('admin.profiles')->with('message', 'User Updated Successfully');
     }
+
 }
